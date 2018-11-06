@@ -1,0 +1,36 @@
+#!/bin/bash
+# 
+# RUN IDEMPOTENCY ===============================================================================
+#
+shopt -s globstar
+rm -f REPORT_IDEMPOTENCY;
+cd Paintings91/Images/
+cp ../../paq8kx_v7.exe .
+#
+# ===============================================================================================
+declare -a NAMES=( "ALBRECHT_DURER" "AMEDEO_MODIGLIANI" "ANDREA_MANTEGNA" "ANDY_WARHOL" "ARSHILLE_GORKY" "CAMILLE_COROT" "CARAVAGGIO" "CASPAR_DAVID_FRIEDRICH" "CLAUDE_LORRAIN" "CLAUDE_MONET" "DANTE_GABRIEL_ROSSETTI" "DAVID_HOCKNEY" "DIEGO_VELAZQUEZ" "EDGAR_DEGAS" "EDVARD_MUNCH" "EDWARD_HOPPER" "EGON_SCHIELE" "EL_LISSITZKY" "EUGENE_DELACROIX" "FERNAND_LEGER" "FRANCISCO_DE_GOYA" "FRANCISCO_DE_ZURBARAN" "FRANCIS_BACON" "FRANS_HALS" "FRANZ_MARC" "FRA_ANGELICO" "FRIDA_KAHLO" "Frederic_Edwin_Church" "GENTILESCHI_ARTEMISIA" "GEORGES_BRAQUE" "GEORGES_DE_LA_TOUR" "GEORGES_SEURAT" "GEORGIA_OKEEFE" "GERHARD_RICHTER" "GIORGIONE" "GIORGIO_DE_CHIRICO" "GIOTTO_DI_BONDONE" "GUSTAVE_COURBET" "GUSTAVE_MOREAU" "GUSTAV_KLIMT" "HANS_HOLBEIN_THE_YOUNGER" "HANS_MEMLING" "HENRI_MATISSE" "HIERONYMUS_BOSCH" "JACKSON_POLLOCK" "JACQUES-LOUIS_DAVID" "JAMES_ENSOR" "JAMES_MCNEILL_WHISTLER" "JAN_VAN_EYCK" "JAN_VERMEER" "JASPER_JOHNS" "JEAN-ANTOINE_WATTEAU" "JEAN-AUGUSTE-DOMINIQUE_INGRES" "JEAN-MICHEL_BASQUIAT" "JEAN_FRANCOIS_MILLET" "JOACHIM_PATINIR" "JOAN_MIRO" "JOHN_CONSTABLE" "JOSEPH_MALLORD_WILLIAM_TURNER" "KAZIMIR_MALEVICH" "LUCIO_FONTANA" "MARC_CHAGALL" "MARK_ROTHKO" "MAX_ERNST" "NICOLAS_POUSSIN" "PAUL_CEZANNE" "PAUL_GAUGUIN" "PAUL_KLEE" "PETER_PAUL_RUBENS" "PIERRE-AUGUSTE_RENOIR" "PIETER_BRUEGEL_THE_ELDER" "PIET_MONDRIAN" "Picasso" "RAPHAEL" "REMBRANDT_VAN_RIJN" "RENE_MAGRITTE" "ROGER_VAN_DER_WEYDEN" "ROY_LICHTENSTEIN" "SALVADOR_DALI" "SANDRO_BOTTICELLI" "THEODORE_GERICAULT" "TINTORETTO" "TITIAN" "UMBERTO_BOCCIONI" "VINCENT_VAN_GOGH" "WASSILY_KANDINSKY" "WILLEM_DE_KOONING" "WILLIAM_BLAKE" "WILLIAM_HOGARTH" "WINSLOW_HOMER" "РDOUARD_MANET" )
+  #
+  #
+  for i in "${NAMES[@]}"
+  do
+    SUM_SIZE=0;
+    declare -a AUTH_NAME;
+    readarray AUTH_NAME < <(ls -d *.jpg.pgm | grep $i)
+    #
+    for j in "${AUTH_NAME[@]}"
+      do
+      echo "Compressing $j ...";
+      rm -fr archivepq1x.paq8kx archivepq2x.paq8kx
+      ./paq8kx_v7.exe -8 archivepq1x $j;
+      ./paq8kx_v7.exe -8 archivepq2x $j $j;
+      COMPRESSED_SIZE1x=`ls -la archivepq1x.paq8kx | awk '{ print $5;}'`; 
+      COMPRESSED_SIZE2x=`ls -la archivepq2x.paq8kx | awk '{ print $5;}'`; 
+      echo "scale=12; ($COMPRESSED_SIZE1x/$COMPRESSED_SIZE2x)*100.0" | bc -l | awk '{printf "%f\n", $0}'  >> ../../REPORT_IDEMPOTENCY;
+      done; 
+  done
+cd ../../
+cat REPORT_IDEMPOTENCY | awk '{for(i=1;i<=NF;i++) {sum[i] += $i; sumsq[i] += ($i)^2}} 
+  END {for (i=1;i<=NF;i++) {
+  printf "Average: %f ; Standard deviation: %f ;\n", sum[i]/NR, sqrt((sumsq[i]-sum[i]^2/NR)/NR)}
+  }'
+#
