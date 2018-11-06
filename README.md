@@ -1,9 +1,8 @@
 <p align="center">
 <img src="imgs/logo.png" alt="Panther" width="200" border="0" /></p>
 <br>
-
 <p align="center">
-PANThER: measuring statistical information of artistic paintings
+Measuring statistical information of artistic paintings
 </p>
 
 ## INSTALL
