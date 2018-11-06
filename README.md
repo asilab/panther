@@ -1,8 +1,10 @@
 <p align="center">
-<img src="imgs/logo.png" alt="Panther" width="150" border="0" /></p>
+<img src="imgs/logo.png" alt="Panther" width="200" border="0" /></p>
 <br>
 
-PANThER: measuring algorithmic complexity in images of artistic paintings
+<p align="center">
+PANThER: measuring statistical information of artistic paintings
+</p>
 
 ## INSTALL
 Get PANThER project using:
