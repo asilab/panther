@@ -19,7 +19,7 @@ cd panther/
 
 ## CITE
 Please cite the followings, if you use PANThER:
-* D. Pratas, "Measuring algorithmic complexity in images of artistic paintings," 2018.
+* Processing...
 
 ## RELEASES
 * [Release](https://github.com/pratas/panther/releases) 1.
