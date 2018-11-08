@@ -13,6 +13,20 @@ cd panther/
 ```
 
 ## RUN
+Move to the src/ directory 
+```
+cd src/
+```
+an use the following instructions.
+
+To benchmark the compressors use the following command:
+```
+./Benchmark.sh
+```
+
+
+
+To run results, use the following command in the src dir:
 ```bash
 ./Run.sh
 ``` 
