@@ -13,18 +13,29 @@ cd panther/
 ```
 
 ## RUN
-Move to the src/ directory 
+Move to the src/ directory and give run permissions
 ```
 cd src/
+chmod +x *.sh
 ```
 an use the following instructions.
 
-To benchmark the compressors use the following command:
+To benchmark the compressors, use the following command:
 ```
 ./Benchmark.sh
 ```
 
+To assess the normality proerties, use the following command:
+```
+./Idempotency.sh
+./Symmetry.sh
+./Triangular.sh
+```
 
+To assess the impact of uniform substitutions of pixels, use the following command:
+``` 
+./Noise.sh
+```
 
 To run results, use the following command in the src dir:
 ```bash
