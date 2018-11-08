@@ -16,6 +16,15 @@ cd panther/
 ```bash
 ./Run.sh
 ``` 
+This will run automatically the following scripts:
+```bash
+./Install.sh
+./Dataset.sh
+./Quantize.sh
+./Compress.sh
+./Average.sh
+./NCC.sh
+```
 
 ## CITE
 Please cite the followings, if you use PANThER:

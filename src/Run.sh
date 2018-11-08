@@ -6,4 +6,6 @@ chmod +x *.sh
 ./Dataset.sh
 ./Quantize.sh
 ./Compress.sh
+./NCC.sh
+./Average.sh
 #
