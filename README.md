@@ -34,7 +34,7 @@ To assess the normality proerties, use the following command:
 
 To assess the impact of uniform substitutions of pixels, use the following command:
 ``` 
-./Noise.sh
+./Editions.sh
 ```
 
 To run results, use the following command in the src dir:
