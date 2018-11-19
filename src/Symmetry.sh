@@ -1,6 +1,6 @@
 #!/bin/bash
 # 
-# RUN IDEMPOTENCY ===============================================================================
+# RUN SYMMETRY ==================================================================================
 #
 shopt -s globstar
 rm -f REPORT_SYMMETRY;
@@ -22,7 +22,7 @@ for j in "${PAINTINGS[@]}"
   ./paq8kx_v7.exe -8 archive_yx $i $j;
   COMPRESSED_SIZExy=`ls -la archive_xy.paq8kx | awk '{ print $5;}'`; 
   COMPRESSED_SIZEyx=`ls -la archive_yx.paq8kx | awk '{ print $5;}'`; 
-  if(( $COMPRESSED_SIZExy < $COMPRESSED_SIZEyx ));
+  if (( $COMPRESSED_SIZExy < $COMPRESSED_SIZEyx ));
     then
     echo "scale=12; ($COMPRESSED_SIZExy/$COMPRESSED_SIZEyx)*100.0" | 
     bc -l | awk '{printf "%f\n", $0}'  >> ../../REPORT_SYMMETRY;
