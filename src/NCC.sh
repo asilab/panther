@@ -1,6 +1,6 @@
 #!/bin/bash
 # 
-# RUN COMPRESSION ===============================================================================
+# RUN NCC =======================================================================================
 #
 shopt -s globstar
 rm -f REPORT_COMPLEXITY_CONDITIONAL;
@@ -14,23 +14,29 @@ declare -a NAMES=( "ALBRECHT_DURER" "AMEDEO_MODIGLIANI" "ANDREA_MANTEGNA" "ANDY_
   rm -f NC_AVERAGE_TMP;
   for i in "${NAMES[@]}"
   do
+    #
     SUM_SIZE=0;
     declare -a AUTH_NAME;
     readarray AUTH_NAME < <(ls -d *.jpg.pgm | grep $i)
     #
+    rm -f NCC_LOOP_NAMES;
     for j in "${AUTH_NAME[@]}"
       do
-      echo "Compressing $j ...";
-      rm -fr archivepq
-      ./paq8kx_v7.exe -8 archivepq $j;
-      COMPRESSED_SIZE=`ls -la archivepq.paq8kx | awk '{ print $5;}'`; 
+      printf "Compressing $j";
+      rm -fr ncc_archive
+      ./paq8kx_v7.exe -8 ncc_archive $j;
+      COMPRESSED_SIZE=`ls -la ncc_archive.paq8kx | awk '{ print $5;}'`;
       SUM_SIZE=$((SUM_SIZE+COMPRESSED_SIZE));
-      done; 
-    rm -f archivepq2.paq8kx;
-    ./paq8kx_v7.exe -8 archivepq2 $AUTH_NAME;
-    COMPRESSED_CONDITIONAL_SIZE=`ls -la archivepq2.paq8kx | awk '{ print $5;}'`;
+      echo "$j" | tr '\n' ' ' >> NCC_LOOP_NAMES;
+      done
+    #
+    rm -f ncc_archive2.paq8kx;
+    names_to_compress=`cat NCC_LOOP_NAMES`;
+    ./paq8kx_v7.exe -8 ncc_archive2 $names_to_compress;
+    COMPRESSED_CONDITIONAL_SIZE=`ls -la ncc_archive2.paq8kx | awk '{ print $5;}'`;
     printf "\"$i\"" >> ../../REPORT_COMPLEXITY_CONDITIONAL;
-    echo "scale=8; ($COMPRESSED_CONDITIONAL_SIZE/$SUM_SIZE)" | bc -l | awk '{printf "\t%f\n", $0}'  >> ../../REPORT_COMPLEXITY_CONDITIONAL;
+    echo "scale=8; ($COMPRESSED_CONDITIONAL_SIZE/$SUM_SIZE)" \
+    | bc -l | awk '{printf "\t%f\n", $0}' >> ../../REPORT_COMPLEXITY_CONDITIONAL;
+    #
   done
-cd ../../
-#
+# ===============================================================================================
