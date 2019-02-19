@@ -25,7 +25,7 @@ To benchmark the compressors, use the following command:
 ./Benchmark.sh
 ```
 
-To assess the normality proerties, use the following command:
+To assess the normality properties, use the following command:
 ```
 ./Idempotency.sh
 ./Symmetry.sh
