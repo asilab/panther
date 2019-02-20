@@ -11,7 +11,7 @@ cp ../../paq8kx_v7.exe .
 RANDOM=0;
 SUBSAMPLE=100;
 declare -a PAINTINGS;
-readarray PAINTINGS < <(ls -d *.jpg.pgm | shuf -n $SUBSAMPLE)
+readarray PAINTINGS < <(ls -d *.jpg | shuf -n $SUBSAMPLE)
 #
 for j in "${PAINTINGS[@]}"
   do
