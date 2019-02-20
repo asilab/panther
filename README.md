@@ -2,7 +2,7 @@
 <img src="imgs/logo.png" alt="Panther" width="200" border="0" /></p>
 <br>
 <p align="center">
-Measuring statistical information of artistic paintings
+Measuring probabilistic-algorithmic information of artistic paintings
 </p>
 
 ## INSTALL
