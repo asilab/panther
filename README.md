@@ -20,6 +20,12 @@ chmod +x *.sh
 ```
 an use the following instructions.
 
+First, install and download the dataset:
+```
+./Install.sh
+./Dataset.sh
+```
+
 To benchmark the compressors, use the following command:
 ```
 ./Benchmark.sh
