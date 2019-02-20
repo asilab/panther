@@ -11,7 +11,7 @@ cp ../../paq8kx_v7.exe .
 RANDOM=0;
 SUBSAMPLE=100;
 declare -a PAINTINGS;
-readarray PAINTINGS < <(ls -d *.jpg.pgm)
+readarray PAINTINGS < <(ls -d *.jpg)
 for((i = 0 ; i < SUBSAMPLE ; ++i));
   do
   x=${PAINTINGS[$RANDOM % ${#PAINTINGS[@]}]};
