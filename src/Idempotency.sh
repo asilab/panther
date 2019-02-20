@@ -15,7 +15,7 @@ declare -a NAMES=( "ALBRECHT_DURER" "AMEDEO_MODIGLIANI" "ANDREA_MANTEGNA" "ANDY_
   do
     SUM_SIZE=0;
     declare -a AUTH_NAME;
-    readarray AUTH_NAME < <(ls -d *.jpg.pgm | grep $i)
+    readarray AUTH_NAME < <(ls -d *.jpg | grep $i)
     #
     for j in "${AUTH_NAME[@]}"
       do
