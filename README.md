@@ -8,7 +8,7 @@ Measuring probabilistic-algorithmic information of artistic paintings
 ## INSTALL
 Get PANThER project using:
 ```bash
-git clone https://github.com/pratas/panther.git
+git clone https://github.com/asilab/panther.git
 cd panther/
 ```
 
