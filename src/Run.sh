@@ -11,4 +11,5 @@ chmod +x *.sh
 ./HDC.sh
 ./Average_Complexity.sh
 ./Region_Complexity.sh
+./Average_Regional_Complexity.sh
 ########################
