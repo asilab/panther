@@ -18,6 +18,7 @@ Give run permissions
 ```
 chmod +x *.sh
 bash make.sh
+pip3 install -r requirements.txt 
 ```
 an use the following instructions.
 
