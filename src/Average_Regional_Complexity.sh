@@ -26,13 +26,14 @@ if [[ "$Run_Average_Regional_NC" -eq "1" ]]; then
 
         for a in `seq 1 $number_cols `;
             do
-            cat ../reports/REPORT_REGIONAL_COMPLEXITY_256_Quantizing8 | grep -a $i | awk -F ":" '{print $2}' > Jesus;
-            awk -v var="$a" -F " \t" '{print $var}' Jesus  > Jesus_I_love_you;
-            SUM=$(awk 'BEGIN {t=0}; {t+=$1} END {print t}' Jesus_I_love_you);
-            CAR=$(cat Jesus_I_love_you | wc -l )
+            cat ../reports/REPORT_REGIONAL_COMPLEXITY_256_Quantizing8 | grep -a $i | awk -F ":" '{print $2}' > TT;
+            awk -v var="$a" -F " \t" '{print $var}' TT  > TTMP;
+            SUM=$(awk 'BEGIN {t=0}; {t+=$1} END {print t}' TTMP);
+            CAR=$(cat TTMP | wc -l )
             echo "scale=8; ($SUM / $CAR)" | bc -l | awk '{printf "\t%f\t", $0}' >> ../reports/REPORT_AVG_REGIONAL_COMPLEXITY_PER_BLOCK_256;
         done
         printf "\n" >> ../reports/REPORT_AVG_REGIONAL_COMPLEXITY_PER_BLOCK_256;
     done
+    rm TT TTMP;
     exit;
 fi
