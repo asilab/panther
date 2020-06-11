@@ -2,7 +2,7 @@
 <img src="imgs/logo.png" alt="Panther" width="200" border="0" /></p>
 <br>
 <p align="center">
-Measuring statistical information of artistic paintings
+Measuring probabilistic-algorithmic information of artistic paintings
 </p>
 
 ## INSTALL
@@ -41,6 +41,7 @@ This will run automatically the following scripts:
 ./Average_Regional_Complexity.sh    # Computes fingerprint of each author
 
 ```
+
 To download and prepare the dataset, use the following command:
 ```
 ./Dataset.sh
@@ -50,6 +51,7 @@ To benchmark the compressors, use the following command:
 ```
 ./Benchmark.sh
 ```
+
 To quantitize images run, to trim and binarize, use the following command:
 ```
 ./Quantize.sh                     
@@ -87,8 +89,6 @@ To assess the normality proerties, use the following command:
 ./Symmetry.sh
 ./Triangular.sh
 ```
-
-
 
 ## CITE
 Please cite the followings, if you use PANThER:
