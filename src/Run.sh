@@ -1,11 +1,14 @@
 #!/bin/bash
 #
+########################
 chmod +x *.sh
-#
-./Install.sh
+########################
 ./Dataset.sh
-./Quantize.sh
+./Quantize.sh 
+./Trimm_and_Binarization.sh
+./BDM.sh
 ./Compress.sh
-./NCC.sh
-./Average.sh
-#
+./HDC.sh
+./Average_Complexity.sh
+./Region_Complexity.sh
+########################
