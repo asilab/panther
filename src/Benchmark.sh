@@ -39,7 +39,7 @@ if [[ "$RUN_COMPRESS" -eq "1" ]]; then
   cd Paintings91/Images/
   cp ../../paq8kx_v7.exe .
   cp ../../AC .
-  for x in *.jpg.pgm;
+  for x in *.jpg;
     do
     echo "Running $x ...";
     ./paq8kx_v7.exe -8 $x

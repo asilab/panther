@@ -1,0 +1,8 @@
+[package]
+name = "bitbit"
+version = "0.1.0"
+authors = ["Eduardo Pinho <enet4mikeenet@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+atoi = "0.2.3"
