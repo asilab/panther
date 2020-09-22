@@ -4,9 +4,12 @@
 #include "alpha.h"
 
 Alpha::Alpha(std::vector<std::pair<int,double>> hdc){
+if(hdc.empty()) {
+    std::cerr<<"Empty vector, there is a problem..." << std::endl;
+    exit(0);
+}
 auto log_hdc = log_of_vect(hdc);
 auto pair = best_fit(log_hdc);
-
 this->m = pair.first;
 this->b = pair.second;
 this->alpha = comp_alpha();

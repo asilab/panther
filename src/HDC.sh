@@ -5,7 +5,7 @@
 # ===============================================================================================
 
 function HDC(){
-  rm -f ../reports/REPORT_COMPLEXITY_HDC_$1;
+  rm -f ../reports/REPORT_HDC_$1;
 
   cd $1
   for x in *.jpg.pgm;
@@ -19,9 +19,9 @@ function HDC(){
 
 shopt -s globstar
 cd ../Paintings91/
-HDC "Quantizing2" &
-HDC "Quantizing4" &
-HDC "Quantizing6" &
+# HDC "Quantizing2" &
+# HDC "Quantizing4" &
+# HDC "Quantizing6" &
 HDC "Quantizing8" &
 P=$!
 wait $P

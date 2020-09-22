@@ -8,10 +8,81 @@ from Bio import Phylo
 import math
 from matplotlib import pyplot as plt
 import pylab
+import numpy as np
 from scipy import spatial
 from ete3 import Tree, TreeStyle, TextFace, NodeStyle, faces, RectFace, CircleFace, ImgFace
 from os import path
 from glob import glob  
+from scipy.sparse import csr_matrix
+from scipy.sparse.csgraph import minimum_spanning_tree
+from networkx.drawing.nx_pylab import draw_networkx
+import networkx as nx
+from ete3 import add_face_to_node
+
+
+def compute_minimum_spanning_tree(artists, distance_matrix, authors, styles,list_period_color):
+    dst_list =[]
+    
+    max = len(distance_matrix[-1])
+    for line in distance_matrix:
+        remain = max - len(line)
+        dst_list.append( line + [0.0] *remain)
+
+    G = np.array(dst_list)
+    Tcsr = minimum_spanning_tree(G)       
+    G = nx.Graph(Tcsr)
+    
+    elst = bfs_edge_lst(G, 1)
+    tree = tree_from_edge_lst(elst)
+    newick_minimum_spanning_tree = tree_to_newick(tree) + ';'
+    
+    t = Tree(newick_minimum_spanning_tree)
+    vl = []
+    for node in t.traverse("postorder"):
+        if node.is_leaf():
+            name =artists[int(node.name)]
+            node.name = name
+        else:
+            name = artists[int(node.support)]
+            node.name = name
+        vl.append(node.name)
+
+    ts = TreeStyle()
+    ts,t = set_default_TreeStyle(t)
+
+    def my_layout(node):
+        F = TextFace("\t"+node.name, tight_text=True,fstyle="bold", fsize=40, fgcolor="black")
+        F.rotation = 90
+        add_face_to_node(F, node, column=0, position="branch-bottom")
+
+    ts.layout_fn = my_layout
+    list_of_nodes ={}
+   
+
+    for author in authors:
+        for node in t.traverse("postorder"):
+            if (node.name == author):
+                    new_dic = get_sister_common_styles(node, artists, styles)
+        list_of_nodes.update(new_dic)
+    
+    # for author in artists:
+    #     for node in t.traverse("postorder"):
+    #         if (node.name == author):
+    #                 new_dic = get_common_styles(node, authors,styles,list_of_nodes)
+    #                 break
+    #     sys.exit()
+        # list_of_nodes.update(new_dic)
+   
+    prevalent_dict = most_prevalent(list_of_nodes)
+
+    for author in authors:
+        for node in t.traverse("postorder"):
+            if (node.name == author):
+                attribute_legend(node, authors,styles)
+                add_painting(node, im, basename)
+    
+    savename_period = "../plots/" + "Kruskal_minimum_spanning_tree.pdf"
+    t.render(savename_period,tree_style=ts)
 
 def find_ext(dr, ext):
     return glob(path.join(dr,"*.{}".format(ext)))
@@ -98,6 +169,7 @@ def create_distance_matrix(region_nc):
         counter+=1
     artists[-1]="Edouard Manet"
     return artists, distance_matrix
+
 def create_distance_matrix_cosine(region_nc):
     distance_matrix = []
     artists=[]
@@ -115,6 +187,7 @@ def create_distance_matrix_cosine(region_nc):
         counter+=1
     artists[-1]="Edouard Manet"
     return artists, distance_matrix
+
 def create_distance_matrix_max(region_nc):
     distance_matrix = []
     artists=[]
@@ -158,8 +231,6 @@ def set_default_TreeStyle(tree):
     tree.set_style(ts)
     return ts, tree
 
-    
-
 def set_date_artist_color(name,tree_date, list_period_date,list_date_color):
     ts, tree_date = set_default_TreeStyle(tree_date)
 
@@ -170,11 +241,9 @@ def set_date_artist_color(name,tree_date, list_period_date,list_date_color):
         leaf_date[0] = attribute_color(leaf_date[0],color_date)
 
     tree_date.set_style(ts)
-    savename_date= name + "_date.pdf"
+    savename_date= "../plots" + name + "_date.pdf"
     ts.show_leaf_name = False
     tree_date.render(savename_date,tree_style=ts, dpi=1500,w=600)
-
-
 
 def set_period_artist_color(name,tree_period, list_period_color, styles, authors, im, basename):
     ts,tree_period = set_default_TreeStyle(tree_period)
@@ -228,7 +297,12 @@ def attribute_legend(node, authors,styles):
 
     text=text[:-2]
     text = "  " + text
-    N = TextFace(text, fgcolor="Black", fsize=21,fstyle="italic",bold=False, tight_text=False)
+    #F = TextFace(node.name, tight_text=True, fsize=15, fgcolor="white")
+    #add_face_to_node(F, node, column=0, position="branch-right")
+    N = TextFace(text, fgcolor="Black", fsize=21,fstyle="bold",bold=False, tight_text=False)
+    if not node.is_leaf():
+        N.rotation = 90
+    
     Nspace =  TextFace("  ", fgcolor="Black", fsize=21,bold=True)
     node.add_face(face=Nspace, column=1)
     node.add_face(face=N, column=2)
@@ -240,12 +314,42 @@ def add_painting(node, im, basename):
         if node.name == auth_name:
             filename = pathname
     I = ImgFace(filename, width=150, height=150, is_url=False)
+    if not node.is_leaf:
+        I.rotation = 90
     node.add_face(face=I, column=0)
+
 
 def get_sister_common_styles(node, authors,styles):
     list_of_nodes = {}
     sister = node.get_sisters()
-    if not "Inner" in sister[0].name:
+    if not sister:
+        ancestor = node.get_ancestors()
+        child = node.get_children()
+        if not ancestor:
+            close_node = child[0]
+        elif not child:
+            close_node = ancestor[0]
+        else:
+            dist_father=node.get_distance(child[0])
+            dist_child=node.get_distance(ancestor[0])
+            if dist_father<=dist_child:
+                close_node = ancestor[0]
+            else:
+                close_node=child[0]
+        indx1 = authors.index(node.name)
+        indx2 = authors.index(close_node.name)
+        list_of_nodes={}
+        ext = get_common_element(styles[indx1],styles[indx2])
+        if not ext:
+            list_of_nodes[node.name]=styles[indx1]
+            list_of_nodes[close_node.name]=styles[indx2]
+        elif ext :
+            list_of_nodes[node.name]=ext
+            list_of_nodes[close_node.name]=ext
+        else: 
+            print("ERROR!!")
+
+    elif not "Inner" in sister[0].name:
         sister_node = sister[0]
         indx1 = authors.index(node.name)
         indx2 = authors.index(sister_node.name)
@@ -267,26 +371,58 @@ def get_common_styles(node, authors, styles, list_of_nodes):
     sister = node.get_sisters()
     indx1 = authors.index(node.name)
     list_style_node = styles[indx1]
-
-    if "Inner" in sister[0].name:
-        close = sister[0].get_closest_leaf()
-        if  close[0].name in list_of_nodes:
-            list_style_node_close = list_of_nodes.get(close[0].name)
+    # close_node =node
+    if not sister:
+        ancestor = node.get_ancestors()
+        child = node.get_children()
+        if not ancestor:
+            close_node = child[0]
+        elif not child:
+            close_node = ancestor[0]
         else:
-            indx2 = authors.index(close[0].name)
+            dist_father=node.get_distance(child[0])
+            dist_child=node.get_distance(ancestor[0])
+            if dist_father<=dist_child:
+                close_node = ancestor[0]
+            else:
+                close_node=child[0]
+        
+        if  close_node.name in list_of_nodes:
+                list_style_node_close = list_of_nodes.get(close_node.name)
+        else:
+            indx2 = authors.index(close_node.name)
             list_style_node_close = styles[indx2]
     
         ext = get_common_element(list_style_node,list_style_node_close)
         if not ext:
             list_nodes[node.name]=list_style_node
-            list_nodes[close[0].name]=list_style_node_close
+            list_nodes[close_node.name]=list_style_node_close
         elif ext :
             list_nodes[node.name]=ext
-            list_nodes[close[0].name]=ext
+            list_nodes[close_node.name]=ext
         else: 
             print("ERROR!!")
             sys.exit()
-    return list_nodes
+    else:
+        if "Inner" in sister[0].name:
+            close_node = sister[0].get_closest_leaf()
+            if  close_node[0].name in list_of_nodes:
+                list_style_node_close = list_of_nodes.get(close_node[0].name)
+            else:
+                indx2 = authors.index(close_node[0].name)
+                list_style_node_close = styles[indx2]
+        
+            ext = get_common_element(list_style_node,list_style_node_close)
+            if not ext:
+                list_nodes[node.name]=list_style_node
+                list_nodes[close_node[0].name]=list_style_node_close
+            elif ext :
+                list_nodes[node.name]=ext
+                list_nodes[close_node[0].name]=ext
+            else: 
+                print("ERROR!!")
+                sys.exit()
+        return list_nodes
 
 def get_common_element(list1,list2):
     list1_as_set = set(list1)
@@ -378,6 +514,43 @@ def get_styles_filtered(all_styles,unique_styles):
         sts.append(result)
     return sts
 
+#########################################
+def recursive_search(dict, key):
+    if key in dict:
+        return dict[key]
+    for k, v in dict.items():
+        item = recursive_search(v, key)
+        if item is not None:
+            return item
+
+def bfs_edge_lst(graph, n):
+    return list(nx.bfs_edges(graph, n))
+
+def tree_from_edge_lst(elst):
+    tree = {1: {}}
+    for src, dst in elst:
+        subt = recursive_search(tree, src)
+        subt[dst] = {}
+    return tree
+
+def tree_to_newick(tree):
+    items = []
+    for k in tree.keys():
+        s = ''
+        if len(tree[k].keys()) > 0:
+            #print(k) #debugging
+            subt = tree_to_newick(tree[k])
+            if subt != '':
+                s += '(' + str(subt) + ')'
+        s += str(k)
+        items.append(s)
+    return ','.join(items)
+
+
+################################
+
+
+
 if __name__ == "__main__":
     im  = find_ext("../aux/Img","jpg")
     im =list(filter(lambda k: '_20.jpg' in k, im))
@@ -398,8 +571,12 @@ if __name__ == "__main__":
 
     region_nc = readfile(filename)
     artists,distance_matrix = create_distance_matrix(region_nc)
+    ### This is a test
+    compute_minimum_spanning_tree(artists, distance_matrix, authors, st,period_color )
+
+
+
     calculator = DistanceCalculator('identity')
-    
     dm = DistanceMatrix(names=artists, matrix=distance_matrix)
     constructor = DistanceTreeConstructor()
     tree_nj = constructor.nj(dm)
@@ -420,10 +597,10 @@ if __name__ == "__main__":
     
     
     
-    tree_period_upgma = Tree('tree_upgma.nhx', quoted_node_names=True, format=1)
-    tree_date_upgma = Tree('tree_upgma.nhx', quoted_node_names=True, format=1)
-    set_period_artist_color("t_upgma",tree_period_upgma, period_color,st,authors,im, basename)
-    set_date_artist_color("t_upgma",tree_date_upgma, artist_period, date_color)
+    tree_period_upgma = Tree('../aux/tree_upgma.nhx', quoted_node_names=True, format=1)
+    tree_date_upgma = Tree('../aux/tree_upgma.nhx', quoted_node_names=True, format=1)
+    set_period_artist_color("../aux/t_upgma",tree_period_upgma, period_color,st,authors,im, basename)
+    set_date_artist_color("../aux/t_upgma",tree_date_upgma, artist_period, date_color)
     # set_period_artist_color("t_upgma_256_cosine",tree_period_upgma, period_color,st,authors,im, basename)
     # set_date_artist_color("t_upgma_256_cosine",tree_date_upgma, artist_period, date_color)
     sys.exit()
