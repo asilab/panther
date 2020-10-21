@@ -9,10 +9,10 @@ if [[ "$BUILD_BINARY" -eq "1" ]];
     cd ../
 fi
 
-
 shopt -s globstar
 cd ../Paintings91/
-declare -a NAMES=("Quantizing2" "Quantizing4" "Quantizing6" "Quantizing8");
+declare -a NAMES=("Quantizing2" "Quantizing4" "Quantizing6" "Quantizing8" "normalize_Quantizing8");
+
 for y in "${NAMES[@]}"
   do
   cd $y;

@@ -13,7 +13,7 @@ class PGMRead
         unsigned int get_cols() const;
         std::pair<int, int> get_min_max() const;
         std::string get_new_filename() const;
-
+        
     protected:
     private:
         unsigned int numrows;

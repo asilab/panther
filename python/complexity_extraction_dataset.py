@@ -7,7 +7,9 @@ import matplotlib.pyplot as plt
 import sys
 import matplotlib.pylab as plt
 from string import digits
-import statistics 
+import statistics
+import scipy.io
+
 def reorder_64(artist_list):
     order_64=[0, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 1, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 2, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 3, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 4, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 5, 60, 61, 62, 63, 6, 7, 8, 9]
 
@@ -34,7 +36,7 @@ def process_nc_64_features(file1):
     painter = ""
     painter_label = [] 
     for x in lines:
-            string_line = x.replace('\n', '').replace(' ', '\t').replace(':', '').split('\t')
+            string_line = x.replace("ÃDOUARD_MANET","EDOUARD_MANET").replace('\n', '').replace(' ', '\t').replace(':', '').split('\t')
             unordered_image = list(filter(None, string_line))
             author = unordered_image[0]
             remove_digits = str.maketrans('', '', digits)
@@ -72,7 +74,7 @@ def process_nc_256_features(file1):
     painter = ""
     painter_label = [] 
     for x in lines:
-            string_line = x.replace('\n', '').replace(' ', '\t').replace(':', '').split('\t')
+            string_line = x.replace("ÃDOUARD_MANET","EDOUARD_MANET").replace('\n', '').replace(' ', '\t').replace(':', '').split('\t')
             unordered_image = list(filter(None, string_line))
             author = unordered_image[0]
             remove_digits = str.maketrans('', '', digits)
@@ -100,16 +102,30 @@ def process_nc_256_features(file1):
     print(classes.shape)
     return classes, nc_values
 
-def restructure_data(classes, nc_256,nc_64, hdc, alpha):
+def restructure_data(name,painting, classes, style_class, nc_256,nc_64, hdc, alpha):
     data = {
+        'painting':painting,
         'classes': classes,
+        'style_classes':style_class,
         'nc_256': nc_256,
         'nc_64' : nc_64,
         'hdc': hdc,
         'alpha':alpha,
     }
 
-    np.save('data.npy', data)
+    np.save("../data/"+name+'data.npy', data)
+
+def restructure_normalized_data(name,painting, classes, style_class, nc_256, hdc, alpha):
+    data = {
+        'painting':painting,
+        'classes': classes,
+        'style_classes':style_class,
+        'nc_256': nc_256,
+        'hdc': hdc,
+        'alpha':alpha,
+    }
+
+    np.save("../data/"+name+'data.npy', data)
 
 
 def process_hdc_features(file_to_read):
@@ -120,7 +136,7 @@ def process_hdc_features(file_to_read):
     classes = []
     for x in lines:
         hdc = []
-        string_line = x.replace('\n', '').replace(' ', '\t').replace(':', '').split('\t')
+        string_line = x.replace("ÃDOUARD_MANET","EDOUARD_MANET").replace('\n', '').replace(' ', '\t').replace(':', '').split('\t')
         image = list(filter(None, string_line))
         author = image[0]
 
@@ -151,6 +167,47 @@ def process_hdc_features(file_to_read):
     print(classes.shape)
     return classes, hdc_val
 
+def style_label(file_to_read, labels_to_paintings):
+    lines = file_to_read.readlines() 
+    values_image = []
+
+    painter = ""
+    authors = []
+    
+    for x in lines:
+        hdc = []
+        string_line = x.replace("ÃDOUARD_MANET","EDOUARD_MANET").replace('\n', '').replace(' ', '\t').replace(':', '').split('\t')
+        image = list(filter(None, string_line))
+        author = image[0]
+        authors.append(author)
+        # remove_digits = str.maketrans('', '', digits)
+        # res = author.translate(remove_digits).replace('.jpg.pgm', '').replace('_', ' ').title()
+        # print(author)
+    count=0
+    style = []
+    painting =[]
+    for author in authors:
+        l = -1 
+        for name, label in labels_to_paintings:
+            if name in author:
+               l=label
+        painting.append(author)
+        style.append(l)
+    pnt =[]
+    for p in painting:
+        if "DOUARD_MANET" in p:
+            p = p.replace("ÉDOUARD_MANET", "EDOUARD_MANET")
+        pnt.append(p)
+    painting = np.array(pnt)
+
+
+    st = np.array(style).astype('int32')
+    # for a in painting:
+    #     print(a)
+    return st, painting
+
+
+
 def process_hdc_features_2(file_to_read):
     lines = file_to_read.readlines() 
     values_image = []
@@ -159,7 +216,7 @@ def process_hdc_features_2(file_to_read):
     classes = []
     for x in lines:
         hdc = []
-        string_line = x.replace('\n', '').replace(' ', '\t').replace(':', '').split('\t')
+        string_line = x.replace("ÃDOUARD_MANET","EDOUARD_MANET").replace('\n', '').replace(' ', '\t').replace(':', '').split('\t')
         image = list(filter(None, string_line))
         author = image[0]
 
@@ -172,13 +229,75 @@ def process_hdc_features_2(file_to_read):
         classes.append(number)
         values_image.append(image)
 
-    
-
     alpha_value=np.array(values_image).astype('float32')
     classes=np.array(classes).astype('int32')
     return classes, alpha_value
 
+def match_label(report_hdc, report_nc, labels):
+    label_matcher=[]
+    for painting_nc in report_nc:
+        for label in labels:
+            if label[0] in painting_nc[0]:
+                label_matcher.append( [label[0], label[1], painting_nc[1]])
+
+    label_complete=[]
+    for label in label_matcher:
+        for painting_hdc in report_hdc:
+            if label[0] in painting_hdc[0]:
+                value = label + [painting_hdc[1]]
+                label_complete.append(value)
+    label_complete.sort(key=lambda x: x[1])
+
+    return label_complete
+
+def read_report(filename):
+    f=open(filename, "r", errors='ignore')
+    content = f.readlines()
+    result = []
+    for x in content:
+        string_line = x.replace('\n', '').replace('.pgm', '').replace(".PROCESSED.bin","").replace(' ', '').split(':')
+        line = list(string_line)
+        avg_value = float(line[1])
+        result.append([line[0], avg_value])
+    return result
+
+def get_index(array_index,filename):
+    index=[]
+    counter=0
+    for label_list in array_index:
+        index.append([filename[counter], label_list.tolist().index(1)])
+        counter+=1
+    return index
+
+def get_style_labels():
+    mat = scipy.io.loadmat('../Paintings91/Labels_Style/labels_style.mat')
+    label_style = mat['labels_style']    
+    mat = scipy.io.loadmat('../Paintings91/Labels_Style/image_names_style.mat')
+    mapping_artist=mat['image_names_style']
+    
+    file_name = []
+    names=[]
+    unchanged_names=[]
+    for a in mapping_artist:
+        filename=a[0][0]
+        if "DOUARD_MANET" in filename:
+            filename = filename.replace("ÃDOUARD_MANET","DOUARD_MANET")
+            filename=filename[1:]
+        result = ''.join([i for i in a[0][0] if not i.isdigit()])
+        res=result.replace("_.jpg","").replace("_"," ").title()
+        file_name.append(filename)
+        names.append(res)
+        if "DOUARD_MANET" in result:
+            result = result.replace("ÃDOUARD_MANET","DOUARD_MANET")
+            result=result[1:]
+        unchanged_names.append(result.replace("_.jpg",""))
+    
+    label = get_index(label_style, file_name)
+    return label
+    
 if __name__ == "__main__":
+    labels_paintings = get_style_labels()
+
     file_1 = open("../reports/REPORT_REGIONAL_COMPLEXITY_256_Quantizing8", 'r', encoding='iso-8859-1')
     classes_1, nc_256 = process_nc_256_features(file_1)
     file_2 = open("../reports/REPORT_REGIONAL_COMPLEXITY_64_Quantizing8", 'r', encoding='iso-8859-1')
@@ -187,12 +306,33 @@ if __name__ == "__main__":
     classes_2, hdc = process_hdc_features(file_3)
     file_4 = open("../reports/REPORT_HDC_Quantizing8", 'r', encoding='iso-8859-1')
     classes_3, alpha_value = process_hdc_features_2(file_4)
+    file_4 = open("../reports/REPORT_HDC_Quantizing8", 'r', encoding='iso-8859-1')
+    style_class, painting = style_label(file_4, labels_paintings)
+
 
     for pair in zip(classes, classes_1):
         if(pair[0]!=pair[1]):
             print("error")
             sys.exit()
 
-    restructure_data(classes, nc_256, nc_64, hdc, alpha_value)
+    restructure_data("",painting,classes, style_class, nc_256, nc_64, hdc, alpha_value)
 
+    #### Normalized
+    print("Normalized")
+    file_1 = open("../reports/REPORT_REGIONAL_COMPLEXITY_256_normalize_Quantizing8", 'r', encoding='iso-8859-1')
+    classes_1, nc_256_normalized = process_nc_256_features(file_1)
+    file_3 = open("../reports/NORMALIZED_HDC_FEATURES", 'r', encoding='iso-8859-1')
+    classes_2, hdc_normalized = process_hdc_features(file_3)
+    file_4 = open("../reports/REPORT_HDC_normalize_Quantizing8", 'r', encoding='iso-8859-1')
+    classes_3, alpha_value_normalized = process_hdc_features_2(file_4)
 
+    for pair in zip(classes, classes_1):
+        if(pair[0]!=pair[1]):
+            print("error")
+            sys.exit()
+    restructure_normalized_data("normalized_",painting, classes, style_class, nc_256_normalized, hdc_normalized, alpha_value_normalized)
+    #######################
+        
+    
+
+    

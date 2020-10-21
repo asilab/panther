@@ -5,7 +5,7 @@
 # ===============================================================================================
 
 function BLOCK(){
-  rm -f ../reports/REPORT_REGIONAL_COMPLEXITY_$1;
+  rm -f ../reports/REPORT_REGIONAL_COMPLEXITY_$2_$1;
 
   cd $1
   for x in *.jpg.pgm;
@@ -42,7 +42,10 @@ function BLOCK(){
 
 shopt -s globstar
 cd ../Paintings91/
+BLOCK "Quantizing8" 64 &
 BLOCK "Quantizing8" 256 &
+BLOCK "Quantizing8" 1024 &
+BLOCK "normalize_Quantizing8" 256 &
 P=$!
 wait $P
 cd ../

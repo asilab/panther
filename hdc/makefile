@@ -14,6 +14,10 @@ objects2 = PGMRead.o \
 		  alpha.o \
 		  main2.o
 
+objects3 = PGMRead.o \
+		   max_min.o
+
+
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
@@ -23,12 +27,16 @@ div: $(objects)
 hdc: $(objects2)
 	$(CXX) $(LFLAGS) $^ -o $@
 
+maxmin: $(objects3)
+	$(CXX) $(LFLAGS) $^ -o $@
+
 all: div \
-	 hdc
+	 hdc \
+	 maxmin
 
 
 clean:
-	rm -f *.o div hdc
+	rm -f *.o div hdc maxmin
 
 # Dependencies
 
@@ -41,6 +49,8 @@ hdc.o: hdc.cpp hdc.h
 alpha.o: alpha.cpp alpha.h
 
 divide.o: divide.cpp divide.h
+
+max_min.o: max_min.cpp PGMRead.h
 
 main.o: main.cpp PGMRead.h PGMWrite.h divide.h
 

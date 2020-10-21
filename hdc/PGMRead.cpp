@@ -9,7 +9,6 @@
 
 
 PGMRead::PGMRead(std::string pathToImage){
-    std::cout << pathToImage << std::endl;
     size_t lastindex = pathToImage.find_first_of("."); 
     this->filename = pathToImage.substr(0, lastindex);
     std::ifstream fin(pathToImage.c_str());

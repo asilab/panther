@@ -23,6 +23,7 @@ cd ../Paintings91/
 # HDC "Quantizing4" &
 # HDC "Quantizing6" &
 HDC "Quantizing8" &
+HDC "normalize_Quantizing8" &
 P=$!
 wait $P
 cd ../

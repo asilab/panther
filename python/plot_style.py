@@ -46,9 +46,9 @@ def confidence_ellipse(x, y, ax, n_std=1, facecolor='none', **kwargs):
     ----------------
     kwargs : `~matplotlib.patches.Patch` properties
     """
-    print(x,"\n", y)
+    #print(x,"\n", y)
     #print(x[0]-x[1],"\n", y)
-    print("\n\n\n")
+    #print("\n\n\n")
     if x.size != y.size:
         raise ValueError("x and y must be the same size")
 
@@ -97,6 +97,7 @@ if __name__ == "__main__":
     value=sorted_results[0][4]
     new_list=[]
     separated_results=[]
+    
     for l in sorted_results:
         if l[4]==value:
             new_list.append(l)
