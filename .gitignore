@@ -5,3 +5,7 @@ Paintings91/
 bitbit/.gitignore
 paq/
 paq8kx_v7.exe
+hdc/*.o
+hdc/div
+hdc/hdc
+.vscode/

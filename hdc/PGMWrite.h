@@ -5,7 +5,7 @@
 class PGMWrite
 {
     public:
-        PGMWrite(std::vector<std::vector<int> > pixel_data,std::string pathToImage);  
+        PGMWrite(std::vector<std::vector<int>> pixel_data, std::string pathToImage, std::pair<int,int> min_max);  
         void write(std::string pathToImage);    
         int determine_max_value();
         unsigned int get_rows();

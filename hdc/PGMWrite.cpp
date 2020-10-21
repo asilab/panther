@@ -2,9 +2,9 @@
 #include <algorithm>
 #include "PGMWrite.h"
 
-PGMWrite::PGMWrite(std::vector<std::vector<int> > pixel_data, std::string pathToImage){
+PGMWrite::PGMWrite(std::vector<std::vector<int> > pixel_data, std::string pathToImage, std::pair<int,int> min_max){
     this->pixel_data = pixel_data;
-    this->maxValue=determine_max_value();
+    this->maxValue=min_max.second;
     this->numcols = get_cols();
     this->numrows = get_rows();
     write(pathToImage);

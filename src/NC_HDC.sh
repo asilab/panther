@@ -1,4 +1,4 @@
 #!/bin/bash
 #
 ##Print Plot NC vs HDC
-python3 ../python/NC_HDC.py
+python3.6 ../python/NC_HDC.py

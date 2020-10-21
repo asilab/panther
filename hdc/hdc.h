@@ -5,8 +5,9 @@ class HDC
 {
     public:
         HDC(PGMRead img, unsigned int start_radius=1, double percentage_radious=1);
-        std::vector<std::pair<int,double>> getData();
+        std::vector<std::pair<int,double>> get_hdc() const;
         void printData();
+        void print_hdc() const;
         
     protected:
     private:
@@ -22,6 +23,5 @@ class HDC
         int get_max_radius(double percentage);
         std::vector<int> get_border(unsigned int row, unsigned int col, int radius);
         std::vector<int> compute_quadratic_diff(unsigned int central_pixel, std::vector<int> border);//can be done in cache
-
 };
 

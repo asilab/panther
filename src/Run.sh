@@ -5,6 +5,7 @@ chmod +x *.sh
 ########################
 ./Dataset.sh                        # Downloads and unzips dataset
 ./Quantize.sh                       # Quantizes images of the dataset to 8, 6, 4 and 2 bits.
+./normalize_images.sh               # Normalizes 0 to 256 the 8 bit images.
 ./Trimm_and_Binarization.sh         # Trims and Binarizes images of the dataset.
 ./BDM.sh                            # Computes NBDM (1 and 2) for all quantized images of the dataset.
 ./Compress.sh                       # Computes NC for all quantized images of the dataset.

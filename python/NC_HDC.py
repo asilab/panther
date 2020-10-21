@@ -95,7 +95,7 @@ def extract(lst, index):
 def plot_scatter(style):
     return plt.scatter(style.x_hdc, style.y_nc, s=10, c=style.c_style, alpha=1)    
 
-def make_plot(list_artists):
+def make_plot(list_artists, plot_name):
     plt.clf()
     style_list = unique([row[1] for row in list_artists ])
     S=[]    
@@ -103,9 +103,8 @@ def make_plot(list_artists):
     ax.set_xlabel('HDC \u03B1')
     ax.set_ylabel('NC')
 
-    values = [4,6,8,9,11]
+    values = [4, 6, 8, 9, 11]
     for style_id in style_list:
-
         if style_id not in values:
             style_group = style(list_artists,style_id)
             S.append(plot_scatter(style_group))
@@ -116,11 +115,13 @@ def make_plot(list_artists):
     ,'Romanticism','Symbolism'], bbox_to_anchor=(1.04,1), loc="upper left")
     # ['Abstract Expressionism','The Baroque','Constructivism',
     # 'Cubism','#Impressionism','Neo Classical','#Pop art','Post Impressionism',
-    # '#Realism','#Renaissance','Romanticism','','Symbolism'])
+    # '#Realism','#Renaissance','Romanticism','Surrealism','Symbolism'])
+
+    
     plt.xlim(0, 0.5)
     plt.ylim(0.4, 1)
     plt.gca().set_aspect('auto', adjustable='box')
-    plt.savefig('../plots/hdc_nc.pdf', bbox_inches='tight') 
+    plt.savefig('../plots/' + plot_name, bbox_inches='tight') 
 
 def filter_by_author(list_artist, list_reports):
     author_paintings=[]
@@ -183,7 +184,14 @@ def average_by_style(all_elem):
     avg_NC_style=[]
     avg_HDC_style=[]
     for value_list in all_elem:
-        if label in value_list:
+        
+        if value_list == all_elem[-1]:
+            avg_NC = Average(NC_values)
+            avg_HDC = Average(HDC_values)
+            avg_NC_style.append([label, avg_NC, std_NC])
+            avg_HDC_style.append([label, avg_HDC, std_HDC ])
+
+        if label== value_list[1]:
             NC_values.append(value_list[2])
             HDC_values.append(value_list[3])
         else:
@@ -191,15 +199,16 @@ def average_by_style(all_elem):
             std_HDC=statistics.stdev(HDC_values)
             avg_NC = Average(NC_values)
             avg_HDC = Average(HDC_values)
-            NC_values = []
-            HDC_values = []
             avg_NC_style.append([label, avg_NC, std_NC])
             avg_HDC_style.append([label, avg_HDC, std_HDC ])
-            label+=1    
+            NC_values = []
+            HDC_values = []
+            label+=1
+
+    # [print(s) for s in  avg_NC_style]
     return avg_NC_style, avg_HDC_style
     
 def plot_error_bar(avg_style,limit, lgnd):
-    [print(a) for a in avg_style ]
     values = [4, 6, 8, 9, 11]
     colors = ['#4682b4','#deb887','#FFFF00','#adff2f','#ff6347','#3cb371','#FFA500','#4B0082']
     x = np.array([row[0] for row in avg_style if row[0] not in values])
@@ -224,6 +233,7 @@ def plot_error_bar(avg_style,limit, lgnd):
     plt.xticks(list(range(x.size)), ['Abstract Expressionism','The Baroque','Constructivism',
     'Cubism','Neo Classical','Post Impressionism'
     ,'Romanticism','Symbolism'],rotation=30)
+    #something wrong here
     plt.savefig("../plots/" + lgnd +'.pdf', bbox_inches='tight') 
 
 
@@ -259,18 +269,60 @@ if __name__ == "__main__":
     all_elem = match_label(hdc_report, nc_report,label)
     # [print(a) for a in all_elem]
     avg_NC_style, HDC_values=average_by_style(all_elem)
-    
     plot_error_bar(avg_NC_style,[0.4,1], 'NC')
     plot_error_bar(HDC_values,[0,0.6], 'HDC ⟨\u03B1⟩')
     author_name=unique(names)
     unchanged_author_name=unique(unchanged_names)
     
     author_average, labeled_authors = filter_by_author(unchanged_author_name, all_elem)
-    print(author_average)
     
     # colorc = color(labeled_authors)
     # random.shuffle(colorc)
     # random.shuffle(colorc)
-    make_plot(author_average)
+    make_plot(author_average, 'hdc_nc.pdf')
     # make_author_plot(labeled_authors,colorc)
     
+#################### NORMALIZED ########################
+
+    nc_report_path="../reports/REPORT_COMPLEXITY_NC_16X16_NORMALIZED_IMAGES"
+    hdc_report_path="../reports/NORMALIZED_ALPHA"
+    nc_report = read_report(nc_report_path)
+    hdc_report = read_report(hdc_report_path)
+
+    mat = scipy.io.loadmat('../Paintings91/Labels_Style/labels_style.mat')
+    label_style = mat['labels_style']    
+    mat = scipy.io.loadmat('../Paintings91/Labels_Style/image_names_style.mat')
+    mapping_artist=mat['image_names_style']
+    
+    file_name = []
+    names=[]
+    unchanged_names=[]
+    for a in mapping_artist:
+        filename=a[0][0]
+        if "DOUARD_MANET" in filename:
+            filename = filename.replace("ÃDOUARD_MANET","DOUARD_MANET")
+            filename=filename[1:]
+        result = ''.join([i for i in a[0][0] if not i.isdigit()])
+        res=result.replace("_.jpg","").replace("_"," ").title()
+        file_name.append(filename)
+        names.append(res)
+        if "DOUARD_MANET" in result:
+            result = result.replace("ÃDOUARD_MANET","DOUARD_MANET")
+            result=result[1:]
+        unchanged_names.append(result.replace("_.jpg",""))
+    
+    label = get_index(label_style, file_name)
+    all_elem = match_label(hdc_report, nc_report,label)
+    # [print(a) for a in all_elem]
+    avg_NC_style, HDC_values=average_by_style(all_elem)
+    plot_error_bar(avg_NC_style,[0.4,1], 'NC_Img_norm')
+    plot_error_bar(HDC_values,[0,0.6], 'HDC ⟨\u03B1⟩_Img_norm')
+    author_name=unique(names)
+    unchanged_author_name=unique(unchanged_names)
+    
+    author_average, labeled_authors = filter_by_author(unchanged_author_name, all_elem)
+    
+    # colorc = color(labeled_authors)
+    # random.shuffle(colorc)
+    # random.shuffle(colorc)
+    make_plot(author_average, 'hdc_nc_image_normalization.pdf')

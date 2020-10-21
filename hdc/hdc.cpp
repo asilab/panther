@@ -20,6 +20,10 @@ HDC::HDC(PGMRead img, unsigned int start_radius, double percentage_radious){
     this->numrows = img.get_rows();
     this->numcols = img.get_cols();
     this->max_radius=get_max_radius(percentage_radious);
+    if(pixel_data.empty() || numcols ==0 || numrows == 0 || max_radius ==0){
+        std::cerr<< " Problem " << std::endl;
+        exit(88);
+    }
     this->hdc=hdc_comp(start_radius);
 }
 
@@ -27,11 +31,15 @@ std::vector<std::pair<int,double>> HDC::hdc_comp(unsigned int radius_start){
     std::vector<std::pair<int,double>>  hdc;
     for (auto r=radius_start;r<=this->max_radius;++r){
         std::pair<int,double> val(r,hdc_radius(r));
-        // std::cerr<<val.first<<" , "<<val.second<<std::endl;
-        // std::cerr<<"-----------------"<<std::endl;
         hdc.push_back(val);
     }
     return hdc;
+}
+void HDC::print_hdc() const{
+    auto v = get_hdc();
+    for (auto&hdc:this->hdc){
+        std::cout << "(" << hdc.first << ","<< hdc.second << ")\t";
+    }
 }
 
 double HDC::hdc_radius(int radius){
@@ -54,7 +62,7 @@ double HDC::hdc_radius(int radius){
     // std::cerr << "sum all elem : "<< sum_all_elem << std::endl;
     // std::cerr << "num_elm : "<< num_elm << std::endl;
     //printVector(hdc_quadratic_diff);
-    return sum_all_elem/num_elm;
+    return static_cast<double>(sum_all_elem)/static_cast<double>(num_elm);
 }
 
 int HDC::get_max_radius(double percentage){
@@ -134,6 +142,6 @@ void HDC::printData(){
     }
 }
 
-std::vector<std::pair<int,double>> HDC::getData(){
+std::vector<std::pair<int,double>> HDC::get_hdc() const{
     return this->hdc;
 }

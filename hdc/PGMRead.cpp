@@ -9,6 +9,8 @@
 
 
 PGMRead::PGMRead(std::string pathToImage){
+    size_t lastindex = pathToImage.find_first_of("."); 
+    this->filename = pathToImage.substr(0, lastindex);
     std::ifstream fin(pathToImage.c_str());
     std::string fileType;
     std::string dimensions;
@@ -56,11 +58,16 @@ PGMRead::PGMRead(std::string pathToImage){
         std::cerr << "Dimensions mismatch" <<std::endl;
     }
     fin.close();
+    find_real_min_max();
 }
 
  std::vector<std::vector<int>> PGMRead::getData()
 {
     return pixel_data;
+}
+
+std::string PGMRead::get_new_filename() const{
+    return this->filename;
 }
 
 std::vector<int> PGMRead::removeDupWord(std::string str) 
@@ -75,15 +82,20 @@ std::vector<int> PGMRead::removeDupWord(std::string str)
     } 
     return elem;
 } 
-unsigned int PGMRead::get_cols(){
+unsigned int PGMRead::get_cols()const{
     return this->numcols;
 }
 
-unsigned int PGMRead::get_rows(){
+unsigned int PGMRead::get_rows()const{
     return this->numrows;
 }
 
-void PGMRead::printImgInfo(){
+std::pair<int, int> PGMRead::get_min_max() const{
+    return std::pair<int,int>(this->real_min, real_max);
+}
+
+
+void PGMRead::printImgInfo()const{
 
     std::cout<<"Number of Columns: " << this->pixel_data.size() <<std::endl;
     std::cout<<"Number of Rows: " << this->pixel_data[0].size() <<std::endl;
@@ -91,8 +103,7 @@ void PGMRead::printImgInfo(){
     std::cout<<"max pixel intensity: " << this->max << "\n"; 
 
 }
-void PGMRead::printData()
-{    
+void PGMRead::printData() const {    
     for(std::vector<int> line:this->pixel_data) {
         for (auto elem:line){
         std::cout<< elem << " ";
@@ -101,3 +112,19 @@ void PGMRead::printData()
     }
 }
 
+void PGMRead::find_real_min_max(){
+    int min = 0;
+    int max = 0;
+    for (auto line:this->pixel_data){
+        for(auto pixel:line){
+            if(pixel > max){
+                max = pixel;
+            }
+            if(pixel < min){
+                min = pixel;
+            }
+        }
+    }
+    this->real_max = max;
+    this->real_min = min;
+}
