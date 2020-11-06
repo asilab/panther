@@ -53,7 +53,6 @@ PGMRead::PGMRead(std::string pathToImage){
             counter=0;
         }       
     }
-    
     if (this->numrows!=pixel_data.size() || this->numcols!=pixel_data[0].size()){
         std::cerr << "Dimensions mismatch" <<std::endl;
     }
@@ -61,8 +60,7 @@ PGMRead::PGMRead(std::string pathToImage){
     find_real_min_max();
 }
 
- std::vector<std::vector<int>> PGMRead::getData()
-{
+std::vector<std::vector<int>> PGMRead::getData(){
     return pixel_data;
 }
 
