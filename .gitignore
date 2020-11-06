@@ -1,7 +1,19 @@
 #Files
 Paintings91.zip
 Paintings91/
+Labels_Author/Train/
+Labels_Author/Test/
+Labels_Style/Train/
+Labels_Style/Test/
+data/vgg16conv51_features_author_test.npy
+data/vgg16conv51_features_author_train.npy
+data/vgg16conv51_features_test.npy
+data/vgg16conv51_features_train.npy
 #Other Dependencies installed
 bitbit/.gitignore
 paq/
 paq8kx_v7.exe
+hdc/*.o
+hdc/div
+hdc/hdc
+.vscode/

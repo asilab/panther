@@ -58,7 +58,12 @@ DivideImage::DivideImage(std::vector<std::vector<int>> pixel_value, unsigned int
 
     auto line_divisions = SplitVector(pixel_value,number_blocks);
     this->data_blocks = SplitVectorVector(line_divisions,number_blocks );
+    // for (auto block:data_blocks){
+    //     std::cout << block[0].size() << "," <<block.size()<<std::endl;
+    // }
+    // exit(42);
 }
+
 std::vector<std::vector<std::vector<int>>>  DivideImage::get_data(){
     return this->data_blocks;
 }
