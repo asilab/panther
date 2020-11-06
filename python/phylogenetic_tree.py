@@ -233,7 +233,7 @@ def set_date_artist_color(name,tree_date, list_period_date,list_date_color):
         leaf_date[0] = attribute_color(leaf_date[0],color_date)
 
     tree_date.set_style(ts)
-    savename_date= "../plots" + name + "_date.pdf"
+    savename_date= "../plots/" + name + "_date.pdf"
     ts.show_leaf_name = False
     tree_date.render(savename_date,tree_style=ts, dpi=1500,w=600)
 

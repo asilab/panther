@@ -101,10 +101,15 @@ To perform the Mantel test and view the average variance between different dista
 ``` 
 ./Mantel_test_and_variation.sh 
 ```
-To recreate the feature file for author and style classification run the following command:
+To perform author classification, run the jupyter file:
 ``` 
-./Create_classification_data.sh 
+Painting91_author_classification.ipynb
 ```
+To perform style classification, run the jupyter file
+``` 
+Painting91_style_classification.ipynb
+```
+
 
 To assess the normality properties, use the following command:
 ```
