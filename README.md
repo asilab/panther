@@ -122,7 +122,22 @@ To assess the normality properties, use the following command:
 
 ## CITE
 Please cite the followings, if you use PANThER:
-* Processing...
+
+- Silva, Jorge Miguel, et al. "Automatic analysis of artistic paintings using information-based measures." Pattern Recognition 114 (2021): 107864.
+
+### BibTex
+``` 
+@article{silva2021automatic,
+  title={Automatic analysis of artistic paintings using information-based measures},
+  author={Silva, Jorge Miguel and Pratas, Diogo and Antunes, Rui and Matos, S{\'e}rgio and Pinho, Armando J},
+  journal={Pattern Recognition},
+  volume={114},
+  pages={107864},
+  year={2021},
+  publisher={Elsevier}
+}
+``` 
+
 
 ## RELEASES
 * [Release](https://github.com/pratas/panther/releases) 1.
