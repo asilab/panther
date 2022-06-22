@@ -4,7 +4,7 @@ ete3==3.1.1
 glob2==0.5
 matplotlib==3.2.1
 mpmath==0.19
-numpy==1.17.4
+numpy==1.22.0
 pyaml==16.12.2
 -e git+https://github.com/sztal/pybdm@4bedea1200998a8978ada1a708b4e1f98aacb2d8#egg=pybdm
 scipy==1.4.1
